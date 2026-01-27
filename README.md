@@ -16,5 +16,5 @@ python tasks/task1.py
 # Запуск задания 2
 python tasks/task2.py
 
-# Запуск тестов
+# Запуск тестoв
 pytest
