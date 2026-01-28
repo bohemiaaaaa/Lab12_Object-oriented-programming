@@ -4,7 +4,8 @@
 
 import sqlite3
 
-con = sqlite3.connect('mydatabase.db')
+con = sqlite3.connect("mydatabase.db")
+
 
 def sql_fetch(con):
     cursor_obj = con.cursor()
@@ -12,5 +13,6 @@ def sql_fetch(con):
     rows = cursor_obj.fetchall()
     for row in rows:
         print(row)
+
 
 sql_fetch(con)
