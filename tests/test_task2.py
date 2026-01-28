@@ -106,7 +106,6 @@ class TestFlightRepositorySQLAlchemy:
             session.add(flight)
             session.commit()
 
-            # Теперь отношения должны работать в сессии
             assert flight.departure_airport is not None
             assert flight.arrival_airport is not None
             assert flight.departure_airport.code == "SVO"
