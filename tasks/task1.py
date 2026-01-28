@@ -72,15 +72,20 @@ class FlightRepository:
             INSERT INTO airports (code, name, city)
             VALUES (?, ?, ?)
             """,
-            (code, name, city)
+            (code, name, city),
         )
 
         conn.commit()
         conn.close()
 
-    def add_flight(self, number: str, departure_airport: str,
-                   arrival_airport: str, departure_time: str,
-                   arrival_time: str) -> None:
+    def add_flight(
+        self,
+        number: str,
+        departure_airport: str,
+        arrival_airport: str,
+        departure_time: str,
+        arrival_time: str,
+    ) -> None:
         conn = self._connect()
         cursor = conn.cursor()
 
@@ -92,8 +97,7 @@ class FlightRepository:
             )
             VALUES (?, ?, ?, ?, ?)
             """,
-            (number, departure_airport, arrival_airport,
-             departure_time, arrival_time)
+            (number, departure_airport, arrival_airport, departure_time, arrival_time),
         )
 
         conn.commit()
@@ -105,7 +109,7 @@ class FlightRepository:
 
         cursor.execute(
             """
-            SELECT 
+            SELECT
                 f.number,
                 f.departure_airport,
                 f.arrival_airport,
@@ -124,7 +128,7 @@ class FlightRepository:
                 departure_airport=row[1],
                 arrival_airport=row[2],
                 departure_time=row[3],
-                arrival_time=row[4]
+                arrival_time=row[4],
             )
             for row in rows
         ]
@@ -135,7 +139,7 @@ class FlightRepository:
 
         cursor.execute(
             """
-            SELECT 
+            SELECT
                 f.number,
                 f.departure_airport,
                 f.arrival_airport,
@@ -144,7 +148,7 @@ class FlightRepository:
             FROM flights f
             WHERE f.arrival_airport = ?
             """,
-            (airport_code,)
+            (airport_code,),
         )
 
         rows = cursor.fetchall()
@@ -156,7 +160,7 @@ class FlightRepository:
                 departure_airport=row[1],
                 arrival_airport=row[2],
                 departure_time=row[3],
-                arrival_time=row[4]
+                arrival_time=row[4],
             )
             for row in rows
         ]
@@ -175,10 +179,7 @@ class FlightRepository:
         rows = cursor.fetchall()
         conn.close()
 
-        return [
-            Airport(code=row[0], name=row[1], city=row[2])
-            for row in rows
-        ]
+        return [Airport(code=row[0], name=row[1], city=row[2]) for row in rows]
 
 
 def display_flights(flights: list[Flight]) -> None:
@@ -186,23 +187,30 @@ def display_flights(flights: list[Flight]) -> None:
         print("Список рейсов пуст.")
         return
 
-    line = "+{}+{}+{}+{}+{}+".format(
-        "-" * 10, "-" * 20, "-" * 20, "-" * 16, "-" * 16
-    )
+    line = "+{}+{}+{}+{}+{}+".format("-" * 10, "-" * 20, "-" * 20, "-" * 16, "-" * 16)
 
     print(line)
-    print("|{:^10}|{:^20}|{:^20}|{:^16}|{:^16}|".format(
-        "Номер", "Аэропорт вылета", "Аэропорт прибытия",
-        "Время вылета", "Время прибытия"
-    ))
+    print(
+        "|{:^10}|{:^20}|{:^20}|{:^16}|{:^16}|".format(
+            "Номер",
+            "Аэропорт вылета",
+            "Аэропорт прибытия",
+            "Время вылета",
+            "Время прибытия",
+        )
+    )
     print(line)
 
     for flight in flights:
-        print("|{:<10}|{:<20}|{:<20}|{:<16}|{:<16}|".format(
-            flight.number, flight.departure_airport,
-            flight.arrival_airport, flight.departure_time,
-            flight.arrival_time
-        ))
+        print(
+            "|{:<10}|{:<20}|{:<20}|{:<16}|{:<16}|".format(
+                flight.number,
+                flight.departure_airport,
+                flight.arrival_airport,
+                flight.departure_time,
+                flight.arrival_time,
+            )
+        )
 
     print(line)
 
@@ -215,15 +223,11 @@ def display_airports(airports: list[Airport]) -> None:
     line = "+{}+{}+{}+".format("-" * 6, "-" * 30, "-" * 20)
 
     print(line)
-    print("|{:^6}|{:^30}|{:^20}|".format(
-        "Код", "Название", "Город"
-    ))
+    print("|{:^6}|{:^30}|{:^20}|".format("Код", "Название", "Город"))
     print(line)
 
     for airport in airports:
-        print("|{:<6}|{:<30}|{:<20}|".format(
-            airport.code, airport.name, airport.city
-        ))
+        print("|{:<6}|{:<30}|{:<20}|".format(airport.code, airport.name, airport.city))
 
     print(line)
 
@@ -231,74 +235,57 @@ def display_airports(airports: list[Airport]) -> None:
 def main():
     parser = argparse.ArgumentParser(
         description="Управление авиарейсами",
-        formatter_class=argparse.RawDescriptionHelpFormatter
+        formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
         "--db",
         default="airports.db",
-        help="Путь к файлу базы данных (по умолчанию: airports.db)"
+        help="Путь к файлу базы данных (по умолчанию: airports.db)",
     )
 
     subparsers = parser.add_subparsers(dest="command", help="Команды")
 
     # Команда добавления аэропорта
     airport_parser = subparsers.add_parser(
-        "add-airport",
-        help="Добавить новый аэропорт"
+        "add-airport", help="Добавить новый аэропорт"
     )
     airport_parser.add_argument("--code", required=True, help="Код аэропорта")
     airport_parser.add_argument("--name", required=True, help="Название аэропорта")
     airport_parser.add_argument("--city", required=True, help="Город")
 
     # Команда добавления рейса
-    flight_parser = subparsers.add_parser(
-        "add-flight",
-        help="Добавить новый рейс"
-    )
+    flight_parser = subparsers.add_parser("add-flight", help="Добавить новый рейс")
     flight_parser.add_argument("--number", required=True, help="Номер рейса")
     flight_parser.add_argument(
-        "--departure",
-        required=True,
-        help="Код аэропорта вылета"
+        "--departure", required=True, help="Код аэропорта вылета"
     )
     flight_parser.add_argument(
-        "--arrival",
-        required=True,
-        help="Код аэропорта прибытия"
+        "--arrival", required=True, help="Код аэропорта прибытия"
     )
     flight_parser.add_argument(
         "--departure-time",
         required=True,
-        help="Время вылета (Формат: ГГГГ-ММ-ДД ЧЧ:ММ)"
+        help="Время вылета (Формат: ГГГГ-ММ-ДД ЧЧ:ММ)",
     )
     flight_parser.add_argument(
         "--arrival-time",
         required=True,
-        help="Время прибытия (Формат: ГГГГ-ММ-ДД ЧЧ:ММ)"
+        help="Время прибытия (Формат: ГГГГ-ММ-ДД ЧЧ:ММ)",
     )
 
     # Команда отображения всех рейсов.
-    subparsers.add_parser(
-        "show-flights",
-        help="Показать все рейсы"
-    )
+    subparsers.add_parser("show-flights", help="Показать все рейсы")
 
     # Команда отображения всех аэропортов
-    subparsers.add_parser(
-        "show-airports",
-        help="Показать все аэропорты"
-    )
+    subparsers.add_parser("show-airports", help="Показать все аэропорты")
 
     # Команда выборки рейсов по аэропорту назначения
     select_parser = subparsers.add_parser(
-        "select-by-destination",
-        help="Выборка рейсов по аэропорту назначения"
+        "select-by-destination", help="Выборка рейсов по аэропорту назначения"
     )
     select_parser.add_argument(
-        "--airport",
-        required=True,
-        help="Код аэропорта назначения"
+        "--airport", required=True, help="Код аэропорта назначения"
     )
 
     args = parser.parse_args()
@@ -315,7 +302,7 @@ def main():
             args.departure,
             args.arrival,
             args.departure_time,
-            args.arrival_time
+            args.arrival_time,
         )
         print(f"Рейс {args.number} добавлен.")
 
