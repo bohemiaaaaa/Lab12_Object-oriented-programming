@@ -1,17 +1,18 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-import pytest
-import tempfile
 import os
+import tempfile
 from pathlib import Path
+
+import pytest
 from task1 import Airport, Flight, FlightRepository
 
 
 class TestFlightRepositoryV1:
     @pytest.fixture
     def temp_db(self):
-        with tempfile.NamedTemporaryFile(suffix='.db', delete=False) as f:
+        with tempfile.NamedTemporaryFile(suffix=".db", delete=False) as f:
             db_path = f.name
         yield Path(db_path)
         if os.path.exists(db_path):
@@ -40,7 +41,7 @@ class TestFlightRepositoryV1:
         airports_data = [
             ("SVO", "Шереметьево", "Москва"),
             ("LED", "Пулково", "Санкт-Петербург"),
-            ("DME", "Домодедово", "Москва")
+            ("DME", "Домодедово", "Москва"),
         ]
         for code, name, city in airports_data:
             repo.add_airport(code, name, city)
@@ -52,13 +53,7 @@ class TestFlightRepositoryV1:
     def test_add_flight(self, repo):
         repo.add_airport("SVO", "Шереметьево", "Москва")
         repo.add_airport("LED", "Пулково", "Санкт-Петербург")
-        repo.add_flight(
-            "SU100",
-            "SVO",
-            "LED",
-            "2024-05-20 10:00",
-            "2024-05-20 11:30"
-        )
+        repo.add_flight("SU100", "SVO", "LED", "2024-05-20 10:00", "2024-05-20 11:30")
         flights = repo.get_all_flights()
         assert len(flights) == 1
         flight = flights[0]
@@ -75,7 +70,7 @@ class TestFlightRepositoryV1:
         flights_data = [
             ("SU100", "SVO", "LED", "2024-05-20 10:00", "2024-05-20 11:30"),
             ("SU200", "LED", "DME", "2024-05-20 14:00", "2024-05-20 15:30"),
-            ("SU300", "SVO", "DME", "2024-05-20 16:00", "2024-05-20 16:45")
+            ("SU300", "SVO", "DME", "2024-05-20 16:00", "2024-05-20 16:45"),
         ]
         for number, departure, arrival, dep_time, arr_time in flights_data:
             repo.add_flight(number, departure, arrival, dep_time, arr_time)
@@ -104,11 +99,7 @@ class TestFlightRepositoryV1:
         repo.add_airport("SVO", "Шереметьево", "Москва")
         with pytest.raises(Exception):
             repo.add_flight(
-                "SU100",
-                "SVO",
-                "NONEXISTENT",
-                "2024-05-20 10:00",
-                "2024-05-20 11:30"
+                "SU100", "SVO", "NONEXISTENT", "2024-05-20 10:00", "2024-05-20 11:30"
             )
 
     def test_airport_dataclass(self):
@@ -125,7 +116,7 @@ class TestFlightRepositoryV1:
             departure_airport="SVO",
             arrival_airport="LED",
             departure_time="2024-05-20 10:00",
-            arrival_time="2024-05-20 11:30"
+            arrival_time="2024-05-20 11:30",
         )
         assert flight.number == "SU100"
         assert flight.departure_airport == "SVO"
@@ -137,7 +128,7 @@ class TestFlightRepositoryV1:
             departure_airport="SVO",
             arrival_airport="LED",
             departure_time="2024-05-20 10:00",
-            arrival_time="2024-05-20 11:30"
+            arrival_time="2024-05-20 11:30",
         )
         assert flight == flight2
 
@@ -145,19 +136,21 @@ class TestFlightRepositoryV1:
 class TestDisplayFunctions:
     def test_display_flights_empty(self, capsys):
         from task1 import display_flights
+
         display_flights([])
         captured = capsys.readouterr()
         assert "Список рейсов пуст." in captured.out
 
     def test_display_flights_with_data(self, capsys):
-        from task1 import display_flights, Flight
+        from task1 import Flight, display_flights
+
         flights = [
             Flight(
                 number="SU100",
                 departure_airport="SVO",
                 arrival_airport="LED",
                 departure_time="2024-05-20 10:00",
-                arrival_time="2024-05-20 11:30"
+                arrival_time="2024-05-20 11:30",
             )
         ]
         display_flights(flights)
@@ -172,15 +165,15 @@ class TestDisplayFunctions:
 
     def test_display_airports_empty(self, capsys):
         from task1 import display_airports
+
         display_airports([])
         captured = capsys.readouterr()
         assert "Список аэропортов пуст." in captured.out
 
     def test_display_airports_with_data(self, capsys):
-        from task1 import display_airports, Airport
-        airports = [
-            Airport(code="SVO", name="Шереметьево", city="Москва")
-        ]
+        from task1 import Airport, display_airports
+
+        airports = [Airport(code="SVO", name="Шереметьево", city="Москва")]
         display_airports(airports)
         captured = capsys.readouterr()
         assert "SVO" in captured.out
