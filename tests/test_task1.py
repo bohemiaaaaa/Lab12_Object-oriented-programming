@@ -23,7 +23,7 @@ class TestFlightRepositoryV1:
         return FlightRepository(temp_db)
 
     def test_create_tables(self, repo):
-        repo.add_airport("TEST", "Тестовый аэропорт", "Тестовый город")
+        repo.add_airport("TEST", "Тестовый аэропорт", "Тестoвый город")
         airports = repo.get_all_airports()
         assert len(airports) == 1
         assert airports[0].code == "TEST"
